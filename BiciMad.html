@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>BiciMad</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+	<style type="text/css">
+		.leaflet-div-icon {
+			background: transparent;
+			border: none;
+		}
+		 
+		.leaflet-marker-icon .number{
+			position: relative;
+			top: -70px;
+			font-size: 12px;
+			width: 30px;
+			text-align: center;
+			color: #ffffff;
+		}
+	</style>
+</head>
+<body>
+	<div id="map" style="width: 800px; height: 600px"></div>
+	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+	<script src="https://cdn.rawgit.com/hicom150/Madrid_Bicicletas/master/BiciMad.js"></script>
+	<script>
+
+		var map = L.map('map').setView([40.4168662,-3.7033913], 13);
+
+		L.tileLayer('https://{s}.tiles.mapbox.com/v3/{id}/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+			id: 'examples.map-i86knfo3'
+		}).addTo(map);
+
+		L.NumberedDivIcon = L.Icon.extend({
+			options: {
+			    iconUrl: 'http://a.tiles.mapbox.com/v3/marker/pin-m+7e7e7e.png',
+			    number: '',
+			    iconSize: new L.Point(30, 70),
+				className: 'leaflet-div-icon'
+			},
+		 
+			createIcon: function () {
+				var div = document.createElement('div');
+				var img = this._createImg(this.options['iconUrl']);
+				var numdiv = document.createElement('div');
+				numdiv.setAttribute("class", "number");
+				numdiv.innerHTML = this.options['number'] || '';
+				div.appendChild(img);
+				div.appendChild(numdiv);
+				this._setIconStyles(div, 'icon');
+				return div;
+			}
+		});
+
+		L.geoJson(bicimad, {
+		    pointToLayer: function (feature, latlng) {
+		    	var icon = new L.NumberedDivIcon({number: feature.properties.Estación});
+		        return L.marker(latlng, {icon:icon}).bindPopup(feature.properties.Calle);
+		    }
+		}).addTo(map);
+
+	</script>
+</body>
+</html>
